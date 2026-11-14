@@ -16,7 +16,11 @@
 	# route{} runs these in written order, so no global `order` is needed.
 	route {
 		mercure {
-			publisher_jwt not-a-real-key-smoke-test-only-32b
+			issuer smoke-test {
+				publisher {
+					jwt not-a-real-key-only-for-the-smoke-test-0123456789 HS256
+				}
+			}
 			anonymous
 		}
 		vulcain
