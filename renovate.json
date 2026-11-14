@@ -1,0 +1,106 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Every version caddy-custom builds with is pinned in the Dockerfile. Patch releases and digest moves are batched on one branch and merged with no PR once the Build workflow passes on it; that merge publishes a new image. Minor and major releases wait for a tick on the dependency dashboard first: a FrankenPHP minor once broke a working config.",
+  "timezone": "America/Los_Angeles",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate: caddy-custom version updates",
+  "labels": ["dependencies"],
+  "prHourlyLimit": 0,
+  "enabledManagers": ["custom.regex", "github-actions"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Caddy plugins: xcaddy --with <module>@<version>",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": [
+        "--with (?<depName>github\\.com/[^@\\s]+)@(?<currentValue>v[^\\s\\\\]+)"
+      ],
+      "datasourceTemplate": "go"
+    },
+    {
+      "customType": "regex",
+      "description": "Caddy core",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": ["ARG CADDY_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "depNameTemplate": "caddyserver/caddy",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>\\d+\\.\\d+\\.\\d+)$"
+    },
+    {
+      "customType": "regex",
+      "description": "xcaddy",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": [
+        "ARG XCADDY_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"
+      ],
+      "depNameTemplate": "github.com/caddyserver/xcaddy",
+      "datasourceTemplate": "go"
+    },
+    {
+      "customType": "regex",
+      "description": "Go toolchain",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": ["ARG GO_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "depNameTemplate": "go",
+      "datasourceTemplate": "golang-version"
+    },
+    {
+      "customType": "regex",
+      "description": "PHP, built from source",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": ["ARG PHP_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "depNameTemplate": "php/php-src",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^php-(?<version>\\d+\\.\\d+\\.\\d+)$"
+    },
+    {
+      "customType": "regex",
+      "description": "watcher (FrankenPHP's file-watching library)",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": [
+        "ARG WATCHER_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ],
+      "depNameTemplate": "e-dant/watcher",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Ubuntu base, by tag and digest",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": [
+        "ARG UBUNTU=(?<depName>ubuntu):(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[0-9a-f]{64})"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Patches and digest moves: one batch, merged with no PR once Build passes on the branch. A failing branch gets a PR so the failure is visible.",
+      "matchUpdateTypes": ["patch", "digest", "pin", "pinDigest"],
+      "groupName": "patch updates",
+      "automerge": true,
+      "automergeType": "branch"
+    },
+    {
+      "description": "Minor and major: nothing happens until Cameron ticks it on the dependency dashboard. Then it is tested on its branch and merged with no PR once Build passes.",
+      "matchUpdateTypes": ["minor", "major"],
+      "dependencyDashboardApproval": true,
+      "automerge": true,
+      "automergeType": "branch"
+    },
+    {
+      "description": "Ubuntu stays on its LTS line; moving to the next LTS is a deliberate change.",
+      "matchDepNames": ["ubuntu"],
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": false
+    },
+    {
+      "description": "GitHub Actions, pinned by commit SHA with the version in a comment: majors batched too, since the workflows only build.",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions",
+      "dependencyDashboardApproval": false,
+      "automerge": true,
+      "automergeType": "branch"
+    }
+  ]
+}

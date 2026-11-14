@@ -1,0 +1,25 @@
+# Used by test/smoke.sh: `caddy validate` provisions every module this names.
+# Not a real site; nothing here is served.
+{
+	frankenphp
+	order php_server before file_server
+	auto_https off
+}
+
+:8080 {
+	root * /var/www
+	encode br gzip
+	php_server
+}
+
+:8081 {
+	# route{} runs these in written order, so no global `order` is needed.
+	route {
+		mercure {
+			publisher_jwt not-a-real-key-smoke-test-only-32b
+			anonymous
+		}
+		vulcain
+		respond "ok"
+	}
+}
