@@ -10,7 +10,7 @@
 # against them. Each platform builds natively (no emulation) on its own runner;
 # see .github/workflows/build.yml.
 
-ARG UBUNTU=ubuntu:24.04@sha256:2198e4c65076e9cb0b3d695219df667c0e3b0072da64ca3c2648aca17dcecaf5
+ARG UBUNTU=ubuntu:24.04@sha256:73b999393d07f2bf65a40373778a44dc9a6d54ad7718d29247d8ff9413c4d6a8
 
 # ---------------------------------------------------------------------------
 FROM ${UBUNTU} AS toolchain
