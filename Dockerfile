@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # image runs a debugger). --strip-debug keeps the symbol table, so a PHP crash
 # backtrace still names functions.
 FROM toolchain AS php
-ARG PHP_VERSION=8.5.12
+ARG PHP_VERSION=8.5.13
 WORKDIR /src
 RUN curl -fsSL "https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz" | tar -xz --strip-components=1 \
     && ./configure \
