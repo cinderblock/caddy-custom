@@ -10,7 +10,7 @@
 # against them. Each platform builds natively (no emulation) on its own runner;
 # see .github/workflows/build.yml.
 
-ARG UBUNTU=ubuntu:24.04@sha256:73b999393d07f2bf65a40373778a44dc9a6d54ad7718d29247d8ff9413c4d6a8
+ARG UBUNTU=ubuntu:24.04@sha256:9c7f200c07e3d4a03e7249d2c16bf66a51120fb876aa2242cf31451412543289
 
 # ---------------------------------------------------------------------------
 FROM ${UBUNTU} AS toolchain
@@ -89,7 +89,7 @@ RUN xcaddy build "v${CADDY_VERSION}" \
     --with github.com/caddy-dns/cloudflare@v0.2.4 \
     --with github.com/mholt/caddy-events-exec@v0.1.0 \
     --with github.com/WeidiDeng/caddy-cloudflare-ip@v0.0.0-20231130002422-f53b62aa13cb \
-    --with github.com/dunglas/frankenphp/caddy@v1.13.5 \
+    --with github.com/dunglas/frankenphp/caddy@v1.13.6 \
     --with github.com/dunglas/mercure/caddy@v1.1.6 \
     --with github.com/dunglas/vulcain/caddy@v1.4.6 \
     --with github.com/dunglas/caddy-cbrotli@v1.0.1 \
